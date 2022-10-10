@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../Models/user.models')
+const Users = require('../Models/user.models')
 
 router.post('/',async (req,res) =>{
-    const user = new User({
+    const users = new Users({
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         userName: req.body.userName,
@@ -11,7 +11,7 @@ router.post('/',async (req,res) =>{
     })
 
     try {
-        const response = await user.save()
+        const response = await users.save()
         res.json(response)
     }catch (err) {
         res.send('Err:' + err)
@@ -20,8 +20,8 @@ router.post('/',async (req,res) =>{
 
 router.get('/',async (req,res) =>{
     try {
-        const user = await User.find()
-        res.send(user)
+        const users = await Users.find()
+        res.send(users)
     }catch (err) {
         res.send('Err:'+ err)
     }
@@ -29,8 +29,8 @@ router.get('/',async (req,res) =>{
 
 router.get('/:id',async (req,res) =>{
     try {
-        const user = await User.findById(req.params.id)
-        res.json(user)
+        const users = await Users.findById(req.params.id)
+        res.json(users)
     }catch (err) {
     }
 })

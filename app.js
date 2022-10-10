@@ -6,7 +6,7 @@ const car = require('./routes/car')
 
 
 const app = express();
-const port = 4000;
+const port = 8000;
 
 const url='mongodb://127.0.0.1/express';
 
@@ -18,7 +18,7 @@ con.on("open", ()=>{
 })
 
 app.use(express.json());
-app.use('/user',user)
+app.use('/users',user)
 app.use('/car',car)
 
 app.listen(port,(req,res) => {
