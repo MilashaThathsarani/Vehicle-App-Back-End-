@@ -1,55 +1,67 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-const db = require('../configs/db.configs');
-const { query } = require('express');
+const Car = require('../Models/car.models')
 
-const connection = mysql.createConnection(db.database);
 
-connection.connect(function (err) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('connected to the MySQL Server');
-        var carTableQuery = "CREATE TABLE IF NOT EXISTS cars (registerNumber VARCHAR(255) PRIMARY KEY, brand VARCHAR(255), vehicleNumber VARCHAR(255), price VARCHAR(255))";
-        connection.query(carTableQuery, function (err, result) {
-            if (result.warningCount === 0) {
-                console.log("Car table created");
-            }
-        })
+router.post('/',async (req,res) =>{
+    const car = new Car({
+        registerNumber: req.body.registerNumber,
+        brand: req.body.brand,
+        vehicleNumber: req.body.vehicleNumber,
+        price: req.body.price
+
+    })
+
+    try {
+        const response = await car.save()
+        res.json(response)
+    }catch (err) {
+        res.send('Err:' + err)
+    }
+})
+
+router.get('/',async (req,res) =>{
+    try {
+        const car = await Car.find()
+        res.send(car)
+    }catch (err) {
+        res.send('Err:'+ err)
+    }
+})
+
+router.get('/:id',async (req,res) =>{
+    try {
+        const car = await Car.findById(req.params.id)
+        res.json(car)
+    }catch (err) {
     }
 })
 
 
-router.post('/', (req, res) => {
-    const registerNumber = req.body.registerNumber;
-    const brand = req.body.brand;
-    const vehicleNumber = req.body.vehicleNumber;
-    const price = req.body.price;
-    
+router.delete('/:id',async (req,res) =>{
+    try {
+        const car = await Car.findById(req.params.id)
+        const response = await car.remove()
+        res.json(response)
+    }catch (err) {
+        res.send('Err:'+ err)
+    }
+})
 
+router.put('/:id', async (req, res) => {
+    try {
+        const car = await Post.findById(req.params.id)
+           car.registerNumber = req.body.registerNumber,
+           car.brand = req.body.brand,
+           car.vehicleNumber = req.body.vehicleNumber,
+           car.price = req.body.price
 
-    console.log(req.body);
+        const response = await car.save()
+        res.json(response)
 
-
-
-    var query = "INSERT INTO cars (registerNumber,brand,vehicleNumber,price) VALUES (?,?,?,?)";
-
-    connection.query(query, [registerNumber, brand, vehicleNumber, price], (err) => {
-        if (err) {
-            res.send({
-                "status": "500",
-                "message": "RegisterNum Already Exists!"
-            });
-        } else {
-            res.send({
-                "status": "200",
-                "message": "Car saved successfully"
-            });
-        }
-    })
-
-});
-
+    } catch (err) {
+        res.send('Err: ' + err)
+    }
+})
 
 module.exports = router

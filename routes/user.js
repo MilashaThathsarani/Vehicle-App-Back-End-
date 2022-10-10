@@ -1,65 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-const db = require('../configs/db.configs');
-const { query } = require('express');
+const User = require('../Models/user.models')
 
-const connection = mysql.createConnection(db.database);
+router.post('/',async (req,res) =>{
+    const user = new User({
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        username: req.body.username,
+        password: req.body.password
+    })
 
-connection.connect(function (err) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('connected to the MySQL Server');
-        var userTableQuery = "CREATE TABLE IF NOT EXISTS users (fullName VARCHAR(255), email VARCHAR(255), contactNum VARCHAR(255), username VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
-        connection.query(userTableQuery, function (err, result) {
-            if (result.warningCount === 0) {
-                console.log("User table created");
-            }
-        })
+    try {
+        const response = await user.save()
+        res.json(response)
+    }catch (err) {
+        res.send('Err:' + err)
     }
 })
 
-router.post('/', (req, res) => {
-    const fullName = req.body.fullName;
-    const email = req.body.email;
-    const contactNum = req.body.contactNum;
-    const username = req.body.username;
-    const password = req.body.password;
-
-    console.log(req.body);
-
-    var query = "INSERT INTO users (fullName,email,contactNum, username,password) VALUES (?,?,?,?,?)";
-
-    connection.query(query, [fullName, email, contactNum, username, password], (err) => {
-        if (err) {
-            res.send({
-                "status": "500",
-                "message": "Username Already Exists!"
-            });
-        } else {
-            res.send({
-                "status": "200",
-                "message": "User saved successfully"
-            });
-        }
-    })
-
-});
-
-router.get('/login/:username/:password', (req, res) => {
-    const username = req.params.username
-    const password = req.params.password;
-
-    var query = "SELECT * FROM users WHERE username=? AND password=?";
-
-    connection.query(query, [username, password], (err, row) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(row);
-        }
-    })
+router.get('/',async (req,res) =>{
+    try {
+        const users = await User.find()
+        res.send(users)
+    }catch (err) {
+        res.send('Err:'+ err)
+    }
 })
+
+router.get('/:id',async (req,res) =>{
+    try {
+        const user = await User.findById(req.params.id)
+        res.json(user)
+    }catch (err) {
+    }
+})
+
 
 module.exports = router

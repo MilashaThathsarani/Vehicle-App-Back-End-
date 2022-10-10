@@ -1,8 +1,6 @@
 const express = require('express');
 const user = require('./routes/user');
 const car = require('./routes/car');
-// const login = require('./routes/login')
-
 
 const app = express();
 const port = 8000;
@@ -10,7 +8,6 @@ const port = 8000;
 app.use(express.json());
 app.use('/users',user);
 app.use('/cars',car)
-// app.use('/logins',login)
 
 
 app.listen(port, () => {
