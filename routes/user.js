@@ -6,7 +6,7 @@ router.post('/',async (req,res) =>{
     const user = new User({
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
-        username: req.body.username,
+        userName: req.body.userName,
         password: req.body.password
     })
 
@@ -20,8 +20,8 @@ router.post('/',async (req,res) =>{
 
 router.get('/',async (req,res) =>{
     try {
-        const users = await User.find()
-        res.send(users)
+        const user = await User.find()
+        res.send(user)
     }catch (err) {
         res.send('Err:'+ err)
     }
